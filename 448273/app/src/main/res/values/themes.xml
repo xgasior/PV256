@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="MaterialStyle" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/material_primary</item>
+        <item name="colorPrimaryDark">@color/material_dark</item>
+        <item name="colorAccent">@color/material_accent</item>
+    </style>
+    <style name="MaterialStyle.Punk" parent="MaterialStyle">
+        <item name="colorPrimary">@color/material_primary_punk</item>
+        <item name="colorPrimaryDark">@color/material_dark_punk</item>
+        <item name="colorAccent">@color/material_accent_punk</item>
+    </style>
+
+</resources>
