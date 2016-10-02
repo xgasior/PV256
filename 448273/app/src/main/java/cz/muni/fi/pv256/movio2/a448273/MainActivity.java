@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             setTheme(R.style.MaterialStyle_Punk);
         }
-        prefs.edit().putBoolean("punk", !isPunk).commit();
+        prefs.edit().putBoolean("punk", !isPunk).apply();
 
         setContentView(R.layout.activity_main);
 
@@ -33,8 +33,13 @@ public class MainActivity extends AppCompatActivity {
         mThemeSwitch.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent intent = getIntent();
+
                 finish();
                 startActivity(intent);
+
+                /* Kdyz to udelam takto, tak se aplikace minimalizuje
+                startActivity(intent);
+                finish();*/
             }
         });
     }
