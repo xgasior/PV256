@@ -27,6 +27,11 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 
 public class DetailFragment  extends Fragment {
 
+
+    public DetailFragment() {
+    }
+
+    public static boolean sIsEmpty;
     public static final String TAG = DetailFragment.class.getSimpleName();
     private static final String ARGS_MOVIE = "args_movie";
 
@@ -53,7 +58,6 @@ public class DetailFragment  extends Fragment {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

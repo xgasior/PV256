@@ -1,35 +1,66 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center_vertical"
-              android:minHeight="?android:attr/listPreferredItemHeight"
-              android:orientation="horizontal">
-
-
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rel_lay_rel">
     <LinearLayout
-        android:layout_height="250dp"
         android:layout_width="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@color/material_accent_punk"
+        android:id="@+id/linearLayout">
         <TextView
-            android:id="@+id/list_item_date"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
+            android:id="@+id/type_text"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="top"
             android:fontFamily="sans-serif-condensed"
             android:textColor="#000000"
-            android:textSize="20sp"/>
+            android:textSize="30sp"
+            android:textAppearance="?android:textAppearanceSmall"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentStart="true">
+
+
+        <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/movie_item_icon"
+        android:scaleType="centerCrop"
+        android:layout_alignParentStart="true"/>
+
 
         <TextView
             android:id="@+id/list_item_title"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:fontFamily="sans-serif-condensed"
+            android:background="#EEEEEEEE"
+            android:textColor="#000000"
+            android:gravity="left"
+            android:textSize="30sp"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/list_item_rating"/>
+
+        <TextView
+            android:id="@+id/list_item_rating"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:gravity="right"
             android:fontFamily="sans-serif-condensed"
             android:textColor="#000000"
-            android:textAppearance="?android:textAppearanceSmall"/>
-        <ImageView
-            android:id="@+id/list_item_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"/>
+            android:background="#EEEEEEEE"
+            android:textSize="30sp"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"/>
 
-    </LinearLayout>
 
-</LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

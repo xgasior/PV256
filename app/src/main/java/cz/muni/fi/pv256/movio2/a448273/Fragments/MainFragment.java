@@ -1,22 +1,27 @@
 package cz.muni.fi.pv256.movio2.a448273.Fragments;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
-import cz.muni.fi.pv256.movio2.a448273.Entity.MovieAdapter;
-import cz.muni.fi.pv256.movio2.a448273.Entity.MovieContainer;
+import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.R;
 
 /**
@@ -29,26 +34,25 @@ public class MainFragment  extends Fragment {
     private static final String SELECTED_KEY = "selected_position";
 
     private int mPosition = ListView.INVALID_POSITION;
-    private OnMovieSelectListener mListener;
+    private MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener mListener;
     private Context mContext;
-    private ListView mListView;
+    //private ListView mListView;
+    private RecyclerView mRecyclerView;
+
+    public MainFragment() {
+    }
 
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
-
-        try {
-            mListener = (OnMovieSelectListener) activity;
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Activity must implement OnMovieSelectListener", e);
-        }
+        mListener =  (MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener) activity;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
 
-        mListener = null; //Avoid leaking the Activity
+        mListener = null;
     }
 
     @Override
@@ -56,24 +60,82 @@ public class MainFragment  extends Fragment {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view;
 
-        fillListView(view);
+        ArrayList<Type> mTypeList = MovieContainer.initTypedMovies();
+        if(mTypeList != null && !mTypeList.isEmpty()) {
+            view = inflater.inflate(R.layout.fragment_main, container, false);
+            Log.i("onCreateView:", "full");
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            fillRecycleView(view, mTypeList);
+            if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+                mPosition = savedInstanceState.getInt(SELECTED_KEY);
 
-            if (mPosition != ListView.INVALID_POSITION) {
-                mListView.smoothScrollToPosition(mPosition);
+                if (mPosition != ListView.INVALID_POSITION) {
+                    mRecyclerView.smoothScrollToPosition(mPosition);
+                }
             }
+        }else{
+            Log.i("onCreateView:", "empty");
+
+            final ConnectivityManager connMgr = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            // check for wifi
+           final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+            // check for mobile data
+            final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+           if( mobile == null) {
+               if( wifi != null && !wifi.isConnected()) {
+
+                   view = inflater.inflate(R.layout.empty_fragment, container, false);
+                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
+                   textView.setText("No Internet");
+               } else {
+                   view = inflater.inflate(R.layout.empty_fragment, container, false);
+                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
+                   textView.setText("No data");
+               }
+           }  else {
+               if(!wifi.isConnected() && !mobile.isConnected()) {
+
+                   view = inflater.inflate(R.layout.empty_fragment, container, false);
+                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
+                   textView.setText("No Internet");
+               } else {
+                   view = inflater.inflate(R.layout.empty_fragment, container, false);
+                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
+                   textView.setText("No data");
+               }
+
+           }
+
+
         }
 
+
+
         return view;
+    }
+
+    private void fillRecycleView(View view, ArrayList<Type> types) {
+
+        if (types != null && !types.isEmpty()){
+            mRecyclerView = (RecyclerView) view.findViewById(R.id.movies_by_genres_rec_view);
+            mRecyclerView.setHasFixedSize(true);
+
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+            setAdapter(mRecyclerView, types);
+        }
+
     }
 
     @Override
@@ -87,39 +149,12 @@ public class MainFragment  extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void fillListView(View rootView) {
-        // get data
-        ArrayList<Movie> movieList = MovieContainer.getInstance().getMovieList();
 
-        mListView = (ListView) rootView.findViewById(R.id.movie_list);
 
-        if (movieList != null && !movieList.isEmpty()) {
-            setAdapter(mListView, movieList);
-        }
-    }
+    private void setAdapter(RecyclerView recyclerView, final ArrayList<Type> types) {
 
-    private void setAdapter(ListView filmLV, final ArrayList<Movie> movieList) {
-        MovieAdapter adapter = new MovieAdapter(movieList, mContext);
-        filmLV.setAdapter(adapter);
-
-        // set on click listener
-        filmLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mPosition = position;
-                mListener.onMovieSelect(movieList.get(position));
-            }
-        });
-
-        // set on long click listener
-        filmLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext, movieList.get(position).getTitle(), Toast.LENGTH_SHORT)
-                        .show();
-                return true;
-            }
-        });
+        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, mContext, types);
+        recyclerView.setAdapter(adapter);
     }
 
     public interface OnMovieSelectListener {

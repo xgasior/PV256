@@ -48,7 +48,7 @@
         <LinearLayout
             android:id="@+id/profile_pic"
             android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_height="75dp"
             android:layout_alignBottom="@+id/header_text"
             android:gravity="left"
             android:layout_marginLeft="35dp"
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/fab"
+        android:background="@color/material_accent_punk"
         app:layout_anchor="@id/header_pic"
         app:layout_anchorGravity="bottom|right|end"/>
 
