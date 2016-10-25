@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             setTheme(R.style.MaterialStyle_Punk);
         }
-        prefs.edit().putBoolean("punk", !isPunk).apply();
+        prefs.edit().putBoolean("punk", !isPunk).apply(); // Zmeneno
 
         setContentView(R.layout.activity_main);
 
@@ -37,9 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 startActivity(intent);
 
-                /* Kdyz to udelam takto, tak se aplikace minimalizuje
+                /* Kdyz to udelam takto, tak se aplikace minimalizuje <-- Zmeneno
                 startActivity(intent);
                 finish();*/
+
+                // Ale pokud si to opravdu prejete, muzu to jeste zmenit :)
             }
         });
     }
