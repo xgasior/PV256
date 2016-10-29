@@ -16,9 +16,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
@@ -36,7 +38,6 @@ public class MainFragment  extends Fragment {
     private int mPosition = ListView.INVALID_POSITION;
     private MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener mListener;
     private Context mContext;
-    //private ListView mListView;
     private RecyclerView mRecyclerView;
 
     public MainFragment() {
@@ -66,14 +67,32 @@ public class MainFragment  extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view;
+        View view = null;
 
-        ArrayList<Type> mTypeList = MovieContainer.initTypedMovies();
-        if(mTypeList != null && !mTypeList.isEmpty()) {
+        final ConnectivityManager connMgr = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if( mobile == null) {
+            if( wifi != null && !wifi.isConnected()) {
+
+                view = inflater.inflate(R.layout.empty_fragment, container, false);
+                TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
+                textView.setText("No Internet");
+                return view;
+            }
+        }  else if( mobile!= null && !wifi.isConnected() && !mobile.isConnected()){
+
+                view = inflater.inflate(R.layout.empty_fragment, container, false);
+                TextView textView = (TextView) view.findViewById(R.id.empty_fragment_text);
+                textView.setText("No Internet");
+            return view;
+        }
+
             view = inflater.inflate(R.layout.fragment_main, container, false);
+            mRecyclerView = (RecyclerView) view.findViewById(R.id.movies_by_genres_rec_view);
             Log.i("onCreateView:", "full");
 
-            fillRecycleView(view, mTypeList);
             if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
                 mPosition = savedInstanceState.getInt(SELECTED_KEY);
 
@@ -81,53 +100,20 @@ public class MainFragment  extends Fragment {
                     mRecyclerView.smoothScrollToPosition(mPosition);
                 }
             }
-        }else{
-            Log.i("onCreateView:", "empty");
-
-            final ConnectivityManager connMgr = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            // check for wifi
-           final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-            // check for mobile data
-            final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-           if( mobile == null) {
-               if( wifi != null && !wifi.isConnected()) {
-
-                   view = inflater.inflate(R.layout.empty_fragment, container, false);
-                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
-                   textView.setText("No Internet");
-               } else {
-                   view = inflater.inflate(R.layout.empty_fragment, container, false);
-                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
-                   textView.setText("No data");
-               }
-           }  else {
-               if(!wifi.isConnected() && !mobile.isConnected()) {
-
-                   view = inflater.inflate(R.layout.empty_fragment, container, false);
-                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
-                   textView.setText("No Internet");
-               } else {
-                   view = inflater.inflate(R.layout.empty_fragment, container, false);
-                   TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
-                   textView.setText("No data");
-               }
-
-           }
 
 
-        }
+            RestClient.SetMainFragment(this);
+            MovieContainer.getInstance().initTypedMovies(this);
 
 
 
         return view;
     }
 
-    private void fillRecycleView(View view, ArrayList<Type> types) {
+    private void fillRecycleView(View view, List<Type> types) {
 
         if (types != null && !types.isEmpty()){
-            mRecyclerView = (RecyclerView) view.findViewById(R.id.movies_by_genres_rec_view);
+
             mRecyclerView.setHasFixedSize(true);
 
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -151,13 +137,16 @@ public class MainFragment  extends Fragment {
 
 
 
-    private void setAdapter(RecyclerView recyclerView, final ArrayList<Type> types) {
+    private void setAdapter(RecyclerView recyclerView, final List<Type> types) {
 
-        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, mContext, types);
+        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, mContext);
         recyclerView.setAdapter(adapter);
     }
 
     public interface OnMovieSelectListener {
         void onMovieSelect(Movie movie);
+    }
+    public void setContent() {
+        fillRecycleView(mRecyclerView, MovieContainer.mMovies);
     }
 }

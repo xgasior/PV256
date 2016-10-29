@@ -13,10 +13,12 @@ public class Type implements Parcelable {
 
     private ArrayList<Movie> mMovies;
     private String mName;
+    private String mUrlParameters;
 
-    public Type(String name, ArrayList<Movie> movies){
+    public Type(String name, ArrayList<Movie> movies, String urlParameters){
         mName = name;
         mMovies = movies;
+        mUrlParameters = urlParameters;
     }
 
 
@@ -62,5 +64,13 @@ public class Type implements Parcelable {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public String getUrlParameters() {
+        return mUrlParameters;
+    }
+
+    public void setUrlParameters(String urlParameters) {
+        mUrlParameters = urlParameters;
     }
 }

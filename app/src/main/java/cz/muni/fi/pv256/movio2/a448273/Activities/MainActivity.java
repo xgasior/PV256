@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment;
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MoviesRecyclerVie
 
         setTheme(R.style.MaterialStyle_Punk);
         setContentView(R.layout.activity_main);
-
         if (findViewById(R.id.fragment_detail) != null) {
 
             mIsTwoPanes = true;

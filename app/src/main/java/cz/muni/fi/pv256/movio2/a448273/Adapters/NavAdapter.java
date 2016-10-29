@@ -23,12 +23,12 @@ public class NavAdapter extends BaseAdapter {
     }
     @Override
     public int getCount() {
-        return MovieContainer.initTypedMovies().size();
+        return MovieContainer.getTypes().size();
     }
 
     @Override
     public Object getItem(int i) {
-        return MovieContainer.initTypedMovies().get(i);
+        return MovieContainer.getTypes().get(i);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class NavAdapter extends BaseAdapter {
         TextView tt1 = (TextView) v.findViewById(R.id.nav_title);
         CheckBox chb = (CheckBox) v.findViewById(R.id.checkBox);
 
-        tt1.setText(MovieContainer.initTypedMovies().get(position).getName());
+        tt1.setText(MovieContainer.getTypes().get(position).getName());
         chb.setChecked(true);
 
         return v;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
@@ -16,14 +17,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
-import cz.muni.fi.pv256.movio2.a448273.Activities.DetailActivity;
 import cz.muni.fi.pv256.movio2.a448273.Activities.MainActivity;
+import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment;
@@ -35,19 +33,19 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder>  {
 
-    private Context mContext;
-    private ArrayList<Type> mMovies;
+    public static Context sContext;
+
+
     ViewHolder.OnMovieSelectListener mOnMovieSelectListener;
 
-    public MoviesRecyclerViewAdapter(ViewHolder.OnMovieSelectListener listener, Context context, ArrayList<Type>  movies) {
-        mContext = context;
-        mMovies = movies;
+    public MoviesRecyclerViewAdapter(ViewHolder.OnMovieSelectListener listener, Context context) {
+        sContext = context;
         mOnMovieSelectListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) sContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.movie_item, parent, false);
         Log.i("onCreateViewHolder:", view.toString());
         return new ViewHolder(view);
@@ -59,7 +57,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         int i = 0;
         int j = 0;
         Type x = null;
-        for (Type t : mMovies) {
+        for (Type t : MovieContainer.mMovies) {
             j = i;
             i = i+t.getMovies().size();
             if(position<i) {
@@ -71,10 +69,10 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         if(position-j == 0) {
             name = x.getName();
         }
-        holder.bindView(mContext, name, x.getMovies().get(position-j), mOnMovieSelectListener);
+        holder.bindView(sContext, name, x.getMovies().get(position-j), mOnMovieSelectListener);
         if(position == 0) {
             if(!DetailFragment.sIsEmpty && MainActivity.mIsTwoPanes) {
-                ViewHolder.sOnMovieSelectListener.onMovieSelect(mMovies.get(0).getMovies().get(0)); }
+                ViewHolder.sOnMovieSelectListener.onMovieSelect(MovieContainer.mMovies.get(0).getMovies().get(0)); }
 
         }
     }
@@ -83,7 +81,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     public int getItemCount() {
 
         int i = 0;
-        for (Type t : mMovies) {
+        for (Type t : MovieContainer.mMovies) {
            i+= t.getMovies().size();
         }
         return i;
@@ -121,7 +119,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
             }
             mMovie = movie;
             mContext = context;
-            Bitmap myBitmap = BitmapFactory.decodeResource(context.getResources(), Integer.parseInt(movie.getBackdrop()));
+            Bitmap myBitmap = MovieContainer.sStringHastMap.get(movie.getBackdrop());
             if (myBitmap != null && !myBitmap.isRecycled()) {
                 Palette palette = Palette.from(myBitmap).generate();
                 int defaultCol = 0x000000;
@@ -133,7 +131,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
             }
 
-            mCover.setImageDrawable(context.getResources().getDrawable(Integer.parseInt(movie.getBackdrop())));
+            mCover.setImageDrawable( new BitmapDrawable(MovieContainer.sStringHastMap.get(movie.getBackdrop())));
             mRelativeLayout.setOnClickListener(this);
             mRelativeLayout.setOnLongClickListener(this);
             mRating.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star, 0, 0, 0);

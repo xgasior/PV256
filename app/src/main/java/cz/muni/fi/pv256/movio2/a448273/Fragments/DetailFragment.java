@@ -2,6 +2,7 @@ package cz.muni.fi.pv256.movio2.a448273.Fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
+import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.R;
 
@@ -76,8 +78,8 @@ public class DetailFragment  extends Fragment {
             title.setText(mMovie.getTitle() + "\n" + cal.get(Calendar.YEAR));
            // year.setText(cal.get(Calendar.YEAR));
 
-            back.setBackground(mContext.getResources().getDrawable(Integer.parseInt(mMovie.getBackdrop())));
-            prof.setBackground(mContext.getResources().getDrawable(Integer.parseInt(mMovie.getCoverPath())));
+            back.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getBackdrop())));
+            prof.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getCoverPath())));
         }
 
 
