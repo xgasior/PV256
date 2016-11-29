@@ -12,10 +12,9 @@
         android:layout_height="match_parent"/>
   <ListView
         android:id="@+id/movie_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        android:divider="@null"  />
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:visibility="invisible"  />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
@@ -32,7 +31,7 @@
             <ListView
                 android:id="@+id/lst_menu_items"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="150dp"
                 android:layout_weight="1" />
         </LinearLayout>
     </android.support.design.widget.NavigationView>
