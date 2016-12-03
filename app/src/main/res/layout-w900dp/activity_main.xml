@@ -1,23 +1,19 @@
 <LinearLayout
+    android:id="@+id/mainLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
 
-    <fragment android:name="cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment"
+    <fragment class="cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment"
               android:id="@+id/fragment_main"
               android:layout_width="400dp"
               android:layout_height="match_parent" />
 
-    <fragment android:name="cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment"
+    <fragment class="cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment"
               android:id="@+id/fragment_detail"
               android:layout_weight="1"
-              android:layout_width="0dp"
+              android:layout_width="500dp"
               android:layout_height="match_parent" />
 
 </LinearLayout>
-    </LinearLayout>

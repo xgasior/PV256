@@ -70,10 +70,8 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
         }
     }
 
-
     @Override
     protected List<Type> doInBackground(Void... voids) {
-
 
         for (Type t : sTypes) {
 
@@ -86,8 +84,6 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
                 parseResponse(new OkHttpClient().newCall(request).execute(), t);
                 int i = 0;
                 for (Movie m: t.getMovies()) {
-
-
 
                     MovieContainer.sStringHastMap.put(m.getCoverPath(), Glide.
                             with(sMainFragment.get().getContext()).
@@ -103,8 +99,6 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
                             asBitmap().
                             into(200, 200).
                             get());
-
-
                 }
 
             } catch (IOException e){

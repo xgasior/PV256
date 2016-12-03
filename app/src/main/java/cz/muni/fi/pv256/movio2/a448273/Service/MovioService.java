@@ -80,6 +80,7 @@ public class MovioService extends IntentService {
             showDownloadingNotification(type);
             retrofit2.Response<ResponseRoot> response = requestCall.execute();
             ResponseRoot responseRoot = response.body();
+            mNotificationHelper.cancelNotification(DOWNLOADING);
             mNotificationHelper.showNotification(DOWNLOADED, "Downloaded", true);
             result = parseResponse(responseRoot,type);
         } catch (Exception ex) {
@@ -126,7 +127,7 @@ public class MovioService extends IntentService {
                         with(MainFragment.sContext).
                         load(ConstantContainer.IMAGE_BASE_ADDRESS + movie.getCoverPath()).
                         asBitmap().
-                        into(200, 200).
+                        into(100, 75).
                         get());
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -140,7 +141,7 @@ public class MovioService extends IntentService {
                         with(MainFragment.sContext).
                         load(ConstantContainer.IMAGE_BASE_ADDRESS + movie.getBackdrop()).
                         asBitmap().
-                        into(200, 200).
+                        into(150, 100).
                         get());
             } catch (InterruptedException e) {
                 e.printStackTrace();

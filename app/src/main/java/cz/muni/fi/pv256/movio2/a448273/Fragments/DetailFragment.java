@@ -29,7 +29,6 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 
 public class DetailFragment  extends Fragment {
 
-
     public DetailFragment() {
     }
 
@@ -81,7 +80,6 @@ public class DetailFragment  extends Fragment {
             back.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getBackdrop())));
             prof.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getCoverPath())));
         }
-
 
         return view;
     }

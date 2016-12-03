@@ -25,6 +25,21 @@ public class Type implements Parcelable {
         mUrlParameters = urlParameters;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Type type = (Type) o;
+
+        return mName.equals(type.mName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mName.hashCode();
+    }
 
     @Override
     public int describeContents() {

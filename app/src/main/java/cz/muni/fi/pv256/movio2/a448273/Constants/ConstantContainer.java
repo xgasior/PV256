@@ -10,5 +10,4 @@ public class ConstantContainer {
     public final static String IMAGE_BASE_ADDRESS = "https://image.tmdb.org/t/p/original/";
     public final static String TYPE_INTENT_KEY = "MOVIE_TYPE";
     public final static String DOWNLOADED_INTENT_KEY = "TOYOTA";
-    public final static String INTENT_CONTEXT_KEY = "CONTEXT";
 }

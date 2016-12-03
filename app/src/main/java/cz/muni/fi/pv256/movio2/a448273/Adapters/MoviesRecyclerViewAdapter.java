@@ -16,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import cz.muni.fi.pv256.movio2.a448273.Activities.MainActivity;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
@@ -30,13 +32,13 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder>  {
 
     public static Context sContext;
-
-
+    public static List<Type> sTypes;
     ViewHolder.OnMovieSelectListener mOnMovieSelectListener;
 
-    public MoviesRecyclerViewAdapter(ViewHolder.OnMovieSelectListener listener, Context context) {
+    public MoviesRecyclerViewAdapter(ViewHolder.OnMovieSelectListener listener, Context context, List<Type> types) {
         sContext = context;
         mOnMovieSelectListener = listener;
+        sTypes = types;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         int i = 0;
         int j = 0;
         Type x = null;
-        for (Type t : MovieContainer.sMovies) {
+        for (Type t : sTypes) {
             j = i;
             i = i+t.getMovies().size();
             if(position<i) {
@@ -68,7 +70,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         holder.bindView(sContext, name, x.getMovies().get(position-j), mOnMovieSelectListener);
         if(position == 0) {
             if(!DetailFragment.sIsEmpty && MainActivity.mIsTwoPanes) {
-                ViewHolder.sOnMovieSelectListener.onMovieSelect(MovieContainer.sMovies.get(0).getMovies().get(0)); }
+                ViewHolder.sOnMovieSelectListener.onMovieSelect(sTypes.get(0).getMovies().get(0));
+            }
 
         }
     }
@@ -77,12 +80,11 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     public int getItemCount() {
 
         int i = 0;
-        for (Type t : MovieContainer.sMovies) {
+        for (Type t : sTypes) {
            i+= t.getMovies().size();
         }
         return i;
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener  {
         private RelativeLayout mRelativeLayout;
@@ -102,7 +104,10 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
             mCover = (ImageView)view.findViewById(R.id.movie_item_icon);
             mTypeText = (TextView) view.findViewById(R.id.type_text);
         }
-//linearLayout
+        public static int getContrastColor(int color) {
+            double y = (299 * Color.green(color) + 587 * Color.red(color) + 114 * Color.blue(color)) / 1000;
+            return y >= 128 ? Color.BLACK : Color.WHITE;
+        }
         public void bindView(Context context, String name, Movie movie, OnMovieSelectListener listener) {
             Log.i("OnBindView", movie.getTitle());
             if (movie == null)  return;
@@ -123,7 +128,9 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
                 int transparent = Color.argb(0x99, Color.red(palColor), Color.green(palColor), Color.blue(palColor));
                 mRating.setBackground(new ColorDrawable(transparent));
+                mRating.setTextColor(getContrastColor(transparent));
                 mTitle.setBackground(new ColorDrawable(transparent));
+                mTitle.setTextColor(getContrastColor(transparent));;
 
             }
 
@@ -156,5 +163,4 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
             void onMovieSelect(Movie movie);
         }
     }
-
 }

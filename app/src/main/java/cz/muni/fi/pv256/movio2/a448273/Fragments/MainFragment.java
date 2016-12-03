@@ -16,12 +16,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
 import cz.muni.fi.pv256.movio2.a448273.Constants.ConstantContainer;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
@@ -38,13 +41,11 @@ public class MainFragment  extends Fragment {
 
     private static final String TAG = MainFragment.class.getSimpleName();
     private static final String SELECTED_KEY = "selected_position";
-
+    public static MainFragment sInstance;
     private int mPosition = ListView.INVALID_POSITION;
     private MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener mListener;
     public static Context sContext;
     private RecyclerView mRecyclerView;
-
-
 
     public MainFragment() {
     }
@@ -52,6 +53,7 @@ public class MainFragment  extends Fragment {
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
+        sInstance = this;
         mListener =  (MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener) activity;
     }
 
@@ -65,7 +67,7 @@ public class MainFragment  extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        sInstance = this;
         sContext = getActivity().getApplicationContext();
 
     }
@@ -113,31 +115,29 @@ public class MainFragment  extends Fragment {
 
             startListening();
             for(Type t : MovieContainer.getTypes()) {
-                downloadMovies(t);
+                if(!MovieContainer.sMovies.contains(t)) {
+                    downloadMovies(t);
+                }
             }
 
         return view;
     }
 
-    private void fillRecycleView(View view, List<Type> types) {
+    private void fillRecycleView(RecyclerView view, List<Type> types) {
 
-        if (types != null && !types.isEmpty()){
+        if (types != null) {
+            view.setHasFixedSize(true);
 
-            mRecyclerView.setHasFixedSize(true);
+            view.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+            view.setItemAnimator(new DefaultItemAnimator());
 
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-            setAdapter(mRecyclerView, types);
+            setAdapter(view, types);
         }
 
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // When tablets rotate, the currently selected list item needs to be saved.
-        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
-        // so check for that before storing.
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
@@ -163,8 +163,7 @@ public class MainFragment  extends Fragment {
     }
 
     private void setAdapter(RecyclerView recyclerView, final List<Type> types) {
-
-        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, sContext);
+        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, sContext, types);
         recyclerView.setAdapter(adapter);
     }
 
@@ -172,6 +171,20 @@ public class MainFragment  extends Fragment {
         void onMovieSelect(Movie movie);
     }
     public void setContent() {
-        fillRecycleView(mRecyclerView, MovieContainer.sMovies);
+        ArrayList<Type> typeArrayList = new ArrayList<>();
+        ArrayList<String> checkboxesChecked = new ArrayList<>();
+        for(CheckBox c : NavAdapter.sCheckBoxes.keySet()) {
+            if(c.isChecked()) {
+                checkboxesChecked.add(NavAdapter.sCheckBoxes.get(c));
+            }
+        }
+        for(Type t : MovieContainer.sMovies)  {
+            if (checkboxesChecked.contains(t.getName())) {
+                if(!typeArrayList.contains(t)) {
+                    typeArrayList.add(t);
+                }
+            }
+        }
+        fillRecycleView(mRecyclerView, typeArrayList);
     }
 }

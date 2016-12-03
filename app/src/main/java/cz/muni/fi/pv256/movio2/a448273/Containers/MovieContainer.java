@@ -24,10 +24,7 @@ public class MovieContainer {
     public static List<Type> sMovies = new ArrayList<>();
     public static boolean sDownloaded;
     public static HashMap<String, Bitmap> sStringHastMap = new HashMap<>();
-    private MovieContainer() {
-
-
-    }
+    private MovieContainer() {}
     public static MovieContainer getInstance() {
         if (sInstance == null) {
             sInstance = new MovieContainer();
@@ -45,6 +42,7 @@ public class MovieContainer {
         }
 
     }
+
     public static ArrayList<Type> getTypes() {
 
         ArrayList<Type> types = new ArrayList<>();
