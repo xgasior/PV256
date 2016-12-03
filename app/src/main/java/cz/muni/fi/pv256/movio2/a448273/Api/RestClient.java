@@ -1,32 +1,22 @@
 package cz.muni.fi.pv256.movio2.a448273.Api;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-
-import com.squareup.okhttp.Call;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 import org.joda.time.DateTime;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import cz.muni.fi.pv256.movio2.a448273.Activities.MainActivity;
-import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Constants.ConstantContainer;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment;
-import cz.muni.fi.pv256.movio2.a448273.Secret.Keys;
 
 /**
  * Created by gasior on 28.10.2016.
@@ -36,7 +26,7 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
 
     private static WeakReference<MainFragment> sMainFragment;
     private static RestClient sRestClient;
-    private static String mBaseAddress = "https://api.themoviedb.org/3/discover/movie?api_key="+ Keys.API_KEY__MOVIE_DB+"&";
+    private static String mBaseAddress = "https://api.themoviedb.org/3/discover/movie?api_key="+ ConstantContainer.API_KEY_MOVIE_DB+"&";
     private static ArrayList<Type> sTypes;
     private static String mImageBaseAddress = "https://image.tmdb.org/t/p/original";
 
@@ -99,20 +89,20 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
 
 
 
-                        MovieContainer.sStringHastMap.put(m.getCoverPath(), Glide.
-                                with(sMainFragment.get().getContext()).
-                                load(mImageBaseAddress + m.getCoverPath()).
-                                asBitmap().
-                                into(200, 200).
-                                get());
+                    MovieContainer.sStringHastMap.put(m.getCoverPath(), Glide.
+                            with(sMainFragment.get().getContext()).
+                            load(mImageBaseAddress + m.getCoverPath()).
+                            asBitmap().
+                            into(200, 200).
+                            get());
 
 
-                        MovieContainer.sStringHastMap.put(m.getBackdrop(), Glide.
-                                with(sMainFragment.get().getContext()).
-                                load(mImageBaseAddress + m.getBackdrop()).
-                                asBitmap().
-                                into(200, 200).
-                                get());
+                    MovieContainer.sStringHastMap.put(m.getBackdrop(), Glide.
+                            with(sMainFragment.get().getContext()).
+                            load(mImageBaseAddress + m.getBackdrop()).
+                            asBitmap().
+                            into(200, 200).
+                            get());
 
 
                 }
@@ -131,7 +121,7 @@ public class RestClient  extends AsyncTask<Void, Void, List<Type>> {
     @Override
     protected void onPostExecute(List<Type> result) {
 
-        MovieContainer.mMovies = result;
+        MovieContainer.sMovies = result;
         sMainFragment.get().setContent();
     }
 

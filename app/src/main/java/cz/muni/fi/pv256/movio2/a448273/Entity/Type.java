@@ -15,6 +15,10 @@ public class Type implements Parcelable {
     private String mName;
     private String mUrlParameters;
 
+    public Type() {
+        mMovies = new ArrayList<>();
+    }
+
     public Type(String name, ArrayList<Movie> movies, String urlParameters){
         mName = name;
         mMovies = movies;
@@ -30,11 +34,13 @@ public class Type implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mName);
+        dest.writeString(mUrlParameters);
         dest.writeList(mMovies);
     }
 
     public Type(Parcel in) {
         mName = in.readString();
+        mUrlParameters = in.readString();
         mMovies = in.readArrayList(null);
     }
 

@@ -1,10 +1,14 @@
 package cz.muni.fi.pv256.movio2.a448273.Fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,16 +19,16 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
-import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
+import cz.muni.fi.pv256.movio2.a448273.Constants.ConstantContainer;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.R;
+import cz.muni.fi.pv256.movio2.a448273.Service.MovioService;
 
 /**
  * Created by gasior on 12.10.2016.
@@ -37,8 +41,10 @@ public class MainFragment  extends Fragment {
 
     private int mPosition = ListView.INVALID_POSITION;
     private MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener mListener;
-    private Context mContext;
+    public static Context sContext;
     private RecyclerView mRecyclerView;
+
+
 
     public MainFragment() {
     }
@@ -60,7 +66,7 @@ public class MainFragment  extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContext = getActivity().getApplicationContext();
+        sContext = getActivity().getApplicationContext();
 
     }
 
@@ -69,7 +75,7 @@ public class MainFragment  extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
 
-        final ConnectivityManager connMgr = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connMgr = (ConnectivityManager)sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
@@ -102,10 +108,13 @@ public class MainFragment  extends Fragment {
             }
 
 
-            RestClient.SetMainFragment(this);
-            MovieContainer.getInstance().initTypedMovies(this);
+            //RestClient.SetMainFragment(this);
+            //MovieContainer.getInstance().initTypedMovies(this);
 
-
+            startListening();
+            for(Type t : MovieContainer.getTypes()) {
+                downloadMovies(t);
+            }
 
         return view;
     }
@@ -136,10 +145,26 @@ public class MainFragment  extends Fragment {
     }
 
 
+    private void downloadMovies(Type type) {
+        Intent intent = new Intent(sContext, MovioService.class);
+        intent.putExtra(ConstantContainer.TYPE_INTENT_KEY, type);
+        sContext.startService(intent);
+    }
+    private void startListening() {
+        LocalBroadcastManager.getInstance(sContext).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Type type = (Type) intent.getParcelableExtra(ConstantContainer.TYPE_INTENT_KEY);
+                MovieContainer.sMovies.add(type);
+                setAdapter(mRecyclerView, MovieContainer.sMovies);
+                setContent();
+            }
+        }, new IntentFilter(ConstantContainer.DOWNLOADED_INTENT_KEY));
+    }
 
     private void setAdapter(RecyclerView recyclerView, final List<Type> types) {
 
-        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, mContext);
+        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, sContext);
         recyclerView.setAdapter(adapter);
     }
 
@@ -147,6 +172,6 @@ public class MainFragment  extends Fragment {
         void onMovieSelect(Movie movie);
     }
     public void setContent() {
-        fillRecycleView(mRecyclerView, MovieContainer.mMovies);
+        fillRecycleView(mRecyclerView, MovieContainer.sMovies);
     }
 }

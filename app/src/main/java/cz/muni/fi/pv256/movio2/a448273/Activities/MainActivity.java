@@ -1,14 +1,21 @@
 package cz.muni.fi.pv256.movio2.a448273.Activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Constants.ConstantContainer;
+import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
+import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment;
 import cz.muni.fi.pv256.movio2.a448273.R;
 
@@ -72,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements MoviesRecyclerVie
             startActivity(intent);
         }
     }
+
     private void initNav() {
         ListView listView = (ListView) findViewById(R.id.lst_menu_items);
 

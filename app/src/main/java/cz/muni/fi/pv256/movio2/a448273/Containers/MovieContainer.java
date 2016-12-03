@@ -3,20 +3,16 @@ package cz.muni.fi.pv256.movio2.a448273.Containers;
 import android.graphics.Bitmap;
 
 import org.joda.time.DateTime;
-import org.joda.time.JodaTimePermission;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment;
-import cz.muni.fi.pv256.movio2.a448273.R;
 
 /**
  * Created by gasior on 12.10.2016.
@@ -25,14 +21,13 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 public class MovieContainer {
     private WeakReference<MainFragment> sMainFragment;
     private static MovieContainer sInstance;
-    public static List<Type> mMovies;
+    public static List<Type> sMovies = new ArrayList<>();
     public static boolean sDownloaded;
-    public static HashMap<String, Bitmap> sStringHastMap =
-            sStringHastMap = new HashMap<>();
+    public static HashMap<String, Bitmap> sStringHastMap = new HashMap<>();
     private MovieContainer() {
 
-    }
 
+    }
     public static MovieContainer getInstance() {
         if (sInstance == null) {
             sInstance = new MovieContainer();
@@ -55,7 +50,7 @@ public class MovieContainer {
         ArrayList<Type> types = new ArrayList<>();
 
         types.add(new Type("In theaters", new ArrayList<Movie>(),"&primary_release_date.gte="+DateTime.now().minusDays(14).toString("YYYY-MM-dd")+"&primary_release_date.lte="+DateTime.now().toString("YYYY-MM-dd") ));
-        types.add(new Type("Popular movies", new ArrayList<Movie>(),"sort_by=popularity.desc"));
+        types.add(new Type("Popular movies", new ArrayList<Movie>(),"&sort_by=popularity.desc"));
 
         return types;
     }

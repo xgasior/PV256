@@ -2,7 +2,6 @@ package cz.muni.fi.pv256.movio2.a448273.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -16,9 +15,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.HashMap;
-import java.util.List;
 
 import cz.muni.fi.pv256.movio2.a448273.Activities.MainActivity;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
@@ -57,7 +53,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         int i = 0;
         int j = 0;
         Type x = null;
-        for (Type t : MovieContainer.mMovies) {
+        for (Type t : MovieContainer.sMovies) {
             j = i;
             i = i+t.getMovies().size();
             if(position<i) {
@@ -72,7 +68,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         holder.bindView(sContext, name, x.getMovies().get(position-j), mOnMovieSelectListener);
         if(position == 0) {
             if(!DetailFragment.sIsEmpty && MainActivity.mIsTwoPanes) {
-                ViewHolder.sOnMovieSelectListener.onMovieSelect(MovieContainer.mMovies.get(0).getMovies().get(0)); }
+                ViewHolder.sOnMovieSelectListener.onMovieSelect(MovieContainer.sMovies.get(0).getMovies().get(0)); }
 
         }
     }
@@ -81,7 +77,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     public int getItemCount() {
 
         int i = 0;
-        for (Type t : MovieContainer.mMovies) {
+        for (Type t : MovieContainer.sMovies) {
            i+= t.getMovies().size();
         }
         return i;
