@@ -47,8 +47,8 @@ public class MovieContainer {
 
         ArrayList<Type> types = new ArrayList<>();
 
-        types.add(new Type("In theaters", new ArrayList<Movie>(),"&primary_release_date.gte="+DateTime.now().minusDays(14).toString("YYYY-MM-dd")+"&primary_release_date.lte="+DateTime.now().toString("YYYY-MM-dd") ));
-        types.add(new Type("Popular movies", new ArrayList<Movie>(),"&sort_by=popularity.desc"));
+        types.add(new Type(1l,"In theaters","&primary_release_date.gte="+DateTime.now().minusDays(14).toString("YYYY-MM-dd")+"&primary_release_date.lte="+DateTime.now().toString("YYYY-MM-dd") ));
+        types.add(new Type(2l,"Popular movies","&sort_by=popularity.desc"));
 
         return types;
     }
