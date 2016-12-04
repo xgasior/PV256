@@ -24,19 +24,16 @@ public class MainActivity extends AppCompatActivity implements MoviesRecyclerVie
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
-
+    savedInstanceState = null;
     super.onCreate(savedInstanceState);
     setTheme(R.style.MaterialStyle_Punk);
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.fragment_detail) != null) {
 
             mIsTwoPanes = true;
-
-            if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_detail, new DetailFragment(), DetailFragment.TAG)
                         .commit();
-            }
         } else {
             mIsTwoPanes = false;
             getSupportActionBar().setElevation(0f);
