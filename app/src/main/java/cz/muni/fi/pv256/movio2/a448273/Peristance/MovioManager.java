@@ -37,7 +37,7 @@ public class MovioManager {
     public static final int COLUMN_TITLE = 3;
     public static final int COLUMN_BACK_DROP = 4;
     public static final int COLUMN_POPULARITY = 5;
-    public static final int COLUMN_TYPE_FOREIGN_ID = 5;
+    public static final int COLUMN_TYPE_FOREIGN_ID = 6;
 
     private static final String[] MOVIE_COLUMNS = {
             MovieEntry.COLUMN_ID,
@@ -135,16 +135,16 @@ public class MovioManager {
         Cursor cursor = mContext.getContentResolver().query(TypeEntry.CONTENT_URI, TYPE_COLUMNS, WHERE_TYPE_ID, new String[]{typeId.toString()}, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            ArrayList<Type> movies = new ArrayList<>(cursor.getCount());
+            ArrayList<Type> types = new ArrayList<>(cursor.getCount());
             try {
                 while (!cursor.isAfterLast()) {
-                    movies.add(getType(cursor));
+                    types.add(getType(cursor));
                     cursor.moveToNext();
                 }
             } finally {
                 cursor.close();
             }
-            return movies;
+            return types;
         }
 
         return new ArrayList<>();
@@ -288,8 +288,9 @@ public class MovioManager {
     private Type getType(Cursor cursor) {
         Type type = new Type();
         type.setId(cursor.getLong(COLUMN_TYPE_ID));
-        type.setName(cursor.getColumnName(COLUMN_NAME));
-        type.setUrlParameters(cursor.getColumnName(COLUMN_URL_PARAMETERS));
+        type.setName(cursor.getString(COLUMN_NAME));
+        type.setUrlParameters(cursor.getString(COLUMN_URL_PARAMETERS));
+        type.setMovies(getMoviesOfType(type.getId()));
         return type;
     }
     private ContentValues prepareMovieValues(Movie movie) {
@@ -306,11 +307,11 @@ public class MovioManager {
     private Movie getMovie(Cursor cursor) {
         Movie movie = new Movie();
         movie.setId(cursor.getLong(COLUMN_MOVIE_ID));
-        movie.setCoverPath(cursor.getColumnName(COLUMN_COVER_PATH));
-        movie.setTitle(cursor.getColumnName(COLUMN_TITLE));
-        movie.setReleaseDate(cursor.getLong(COLUMN_RELEASE_DATA));
-        movie.setBackdrop(cursor.getColumnName(COLUMN_BACK_DROP));
+        movie.setBackdrop(cursor.getString(COLUMN_BACK_DROP));
+        movie.setCoverPath(cursor.getString(COLUMN_COVER_PATH));
         movie.setPopularity(cursor.getFloat(COLUMN_POPULARITY));
+        movie.setTitle(cursor.getString(COLUMN_TITLE));
+        movie.setReleaseDate(cursor.getLong(COLUMN_RELEASE_DATA));
         movie.setTypeId(cursor.getLong(COLUMN_TYPE_FOREIGN_ID));
         return movie;
     }

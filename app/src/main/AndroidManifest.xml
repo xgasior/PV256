@@ -33,6 +33,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <provider
+            android:name=".Peristance.MovioProvider"
+            android:authorities="cz.muni.fi.pv256.movio2.a448273"
+            android:exported="false"/>
     </application>
 
 </manifest>

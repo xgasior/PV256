@@ -22,9 +22,11 @@ public class Type implements Parcelable {
 
     public Type() {
         mMovies = new ArrayList<>();
+        mId = 0L;
     }
 
     public Type(String name, ArrayList<Movie> movies, String urlParameters){
+        mId = 0L;
         mName = name;
         mMovies = movies;
         mUrlParameters = urlParameters;

@@ -15,7 +15,7 @@ import static cz.muni.fi.pv256.movio2.a448273.Peristance.MovioContract.*;
 public class MovioDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movio.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 11;
 
     public MovioDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,17 +26,17 @@ public class MovioDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_TYPE_TABLE = "CREATE TABLE " + TypeEntry.TABLE_NAME + " (" +
                 TypeEntry.COLUMN_ID + " INTEGER PRIMARY KEY," +
                 TypeEntry.COLUMN_NAME + " TEXT NOT NULL, " +
-                TypeEntry.COLUMN_URL_PARAMETERS + " TEXT NOT NULL," +
+                TypeEntry.COLUMN_URL_PARAMETERS + " TEXT NOT NULL" +
                 " );";
 
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
-                MovieEntry.COLUMN_ID + " INTEGER PRIMARY KEY," +
+                MovieEntry.COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 MovieEntry.COLUMN_BACK_DROP + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_COVER_PATH + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
                 MovieEntry.COLUMN_RELEASE_DATA + " INTEGER NOT NULL, " +
                 MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-                MovieEntry.COLUMN_TYPE_ID + "INTEGER" +
+                MovieEntry.COLUMN_TYPE_ID + " INTEGER " + " , FOREIGN KEY ("+ MovieEntry.COLUMN_TYPE_ID + ") REFERENCES "+TypeEntry.TABLE_NAME+"("+TypeEntry.COLUMN_ID +")" +
                 " );";
 
         db.execSQL(SQL_CREATE_TYPE_TABLE);

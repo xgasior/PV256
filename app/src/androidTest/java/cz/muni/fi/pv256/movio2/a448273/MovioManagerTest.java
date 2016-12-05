@@ -3,6 +3,7 @@ package cz.muni.fi.pv256.movio2.a448273;
 import android.test.AndroidTestCase;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class MovioManagerTest extends AndroidTestCase {
         );
     }
 
-    public void createTypeTest() throws Exception {
+    public void testCreateType() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -52,7 +53,7 @@ public class MovioManagerTest extends AndroidTestCase {
         assertEquals(type.getName(), result.get(0).getName());
     }
 
-    public void updateTypeTest() throws Exception {
+    public void testUpdateType() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -66,7 +67,7 @@ public class MovioManagerTest extends AndroidTestCase {
     }
 
 
-    public void deleteTypeTest() throws Exception {
+    public void testDeleteType() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -80,7 +81,7 @@ public class MovioManagerTest extends AndroidTestCase {
         assertTrue(result2.size() == 0);
     }
 
-    public void findAllTypesTest() {
+    public void testFindAllTypes() {
 
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
@@ -92,7 +93,29 @@ public class MovioManagerTest extends AndroidTestCase {
         assertTrue(result.size() == 2);
 
     }
-    public void findMoviesByTypeIdTest() throws Exception {
+    public void testFindTypeByIdCheckMoviesNotEmpty() {
+        Type type = new Type(1l, "Typ", "asda");
+        mManager.createType(type);
+
+        Type type2 = new Type(2l, "Typ", "asda");
+        mManager.createType(type2);
+
+        Movie movie = new Movie(1l, DateTime.now().getMillis(), "Asfsg", "ASDg", "ASfg", 6.9f, 1l);
+        mManager.createMovie(movie);
+
+        Movie movie2 = new Movie(2l, DateTime.now().getMillis(), "Asfsg", "ASDg", "ASfg", 6.9f, 2l);
+        mManager.createMovie(movie2);
+
+        List<Type> result1 = mManager.getTypeById(type.getId());
+        List<Type> result2 = mManager.getTypeById(type.getId());
+
+
+        Assert.assertTrue(result1.get(0).getMovies().size() == 1);
+        Assert.assertTrue(result2.get(0).getMovies().size() == 1);
+    }
+
+
+    public void testFindMoviesByTypeId() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -113,7 +136,7 @@ public class MovioManagerTest extends AndroidTestCase {
     }
 
 
-    public void createMovieTest() throws Exception {
+    public void testCreateMovie() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -126,7 +149,7 @@ public class MovioManagerTest extends AndroidTestCase {
         assertEquals(movie.getTitle(), result.get(0).getTitle());
     }
 
-    public void updateMovieTest() throws Exception {
+    public void testUpdateMovie() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -143,7 +166,7 @@ public class MovioManagerTest extends AndroidTestCase {
     }
 
 
-    public void deleteMovieTest() throws Exception {
+    public void testDeleteMovie() throws Exception {
         Type type = new Type(1l, "Typ", "asda");
         mManager.createType(type);
 
@@ -158,7 +181,4 @@ public class MovioManagerTest extends AndroidTestCase {
         List<Movie> result2 = mManager.getMovieById(movie.getId());
         assertTrue(result2.size() == 0);
     }
-
-
-
 }

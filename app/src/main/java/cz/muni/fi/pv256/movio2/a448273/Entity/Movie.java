@@ -23,6 +23,7 @@ public class Movie implements Parcelable
     private Long mTypeId;
 
     public Movie() {
+        mId = 0L;
     }
 
     public Movie(long releaseDate, String coverPath, String title, String backdrop, float popularity){
@@ -33,7 +34,7 @@ public class Movie implements Parcelable
         mPopularity = popularity;
     }
 
-    public Movie(long id, long releaseDate, String coverPath, String title, String backdrop, float popularity) {
+    public Movie(Long id, long releaseDate, String coverPath, String title, String backdrop, float popularity) {
         mId = id;
         mReleaseDate = releaseDate;
         mCoverPath = coverPath;
@@ -114,6 +115,7 @@ public class Movie implements Parcelable
     }
 
     public Movie(Parcel in) {
+
         mId = in.readLong();
         mReleaseDate = in.readLong();
         mCoverPath = in.readString();

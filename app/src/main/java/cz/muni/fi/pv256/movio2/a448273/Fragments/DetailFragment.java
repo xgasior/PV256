@@ -15,9 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.w3c.dom.Text;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
@@ -72,10 +74,9 @@ public class DetailFragment  extends Fragment {
 
         if (mMovie != null) {
 
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(mMovie.getReleaseDate());
-            title.setText(mMovie.getTitle() + "\n" + cal.get(Calendar.YEAR));
-           // year.setText(cal.get(Calendar.YEAR));
+            DateTime dateTime = new DateTime(mMovie.getReleaseDate());
+
+            title.setText(mMovie.getTitle() + "\n" + dateTime.toString(" dd.MM. yyyy"));
 
             back.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getBackdrop())));
             prof.setBackground(new BitmapDrawable(MovieContainer.sStringHastMap.get(mMovie.getCoverPath())));

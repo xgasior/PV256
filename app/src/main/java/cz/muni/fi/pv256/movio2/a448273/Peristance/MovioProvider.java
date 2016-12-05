@@ -164,7 +164,7 @@ public class MovioProvider extends ContentProvider {
         int rowsDeleted;
         switch (match) {
             case TYPE:
-                rowsDeleted = db.delete(MovioContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(MovioContract.TypeEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case MOVIE:
                 rowsDeleted = db.delete(MovioContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
@@ -187,7 +187,7 @@ public class MovioProvider extends ContentProvider {
 
         switch (match) {
             case TYPE:
-                rowsUpdated = db.update(MovioContract.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(MovioContract.TypeEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case MOVIE:
                 rowsUpdated = db.update(MovioContract.MovieEntry.TABLE_NAME, values, selection, selectionArgs);
