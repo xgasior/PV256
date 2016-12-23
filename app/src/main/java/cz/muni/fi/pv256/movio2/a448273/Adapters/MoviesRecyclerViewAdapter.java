@@ -70,7 +70,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         holder.bindView(sContext, name, x.getMovies().get(position-j), mOnMovieSelectListener);
         if(position == 0) {
             if(!DetailFragment.sIsEmpty && MainActivity.mIsTwoPanes) {
-                ViewHolder.sOnMovieSelectListener.onMovieSelect(sTypes.get(0).getMovies().get(0));
+
+      // ViewHolder.sOnMovieSelectListener.onMovieSelect(sTypes.get(0).getMovies().get(0));
             }
 
         }

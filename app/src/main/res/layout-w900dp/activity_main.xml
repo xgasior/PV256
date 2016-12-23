@@ -1,8 +1,22 @@
 <LinearLayout
+    android:id="@+id/main_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/material_primary_punk">
+
+    <include
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+<LinearLayout
     android:id="@+id/mainLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
 
     <fragment class="cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment"
@@ -15,5 +29,7 @@
               android:layout_weight="1"
               android:layout_width="500dp"
               android:layout_height="match_parent" />
+
+</LinearLayout>
 
 </LinearLayout>

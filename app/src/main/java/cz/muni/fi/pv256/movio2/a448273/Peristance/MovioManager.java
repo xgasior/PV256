@@ -77,7 +77,7 @@ public class MovioManager {
             throw new IllegalStateException("type url parameters cannot be null");
         }
 
-        type.setId(ContentUris.parseId(mContext.getContentResolver().insert(TypeEntry.CONTENT_URI, prepareTypeValues(type))));
+        ContentUris.parseId(mContext.getContentResolver().insert(TypeEntry.CONTENT_URI, prepareTypeValues(type)));
     }
 
     public void createMovie(Movie movie) {

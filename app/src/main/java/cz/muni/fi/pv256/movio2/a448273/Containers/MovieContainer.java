@@ -13,6 +13,7 @@ import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.MovioManager;
 
 /**
  * Created by gasior on 12.10.2016.
@@ -24,7 +25,10 @@ public class MovieContainer {
     public static List<Type> sMovies = new ArrayList<>();
     public static boolean sDownloaded;
     public static HashMap<String, Bitmap> sStringHastMap = new HashMap<>();
-    private MovieContainer() {}
+    private MovieContainer() {
+
+
+    }
     public static MovieContainer getInstance() {
         if (sInstance == null) {
             sInstance = new MovieContainer();
@@ -47,8 +51,10 @@ public class MovieContainer {
 
         ArrayList<Type> types = new ArrayList<>();
 
-        types.add(new Type(1l,"In theaters","&primary_release_date.gte="+DateTime.now().minusDays(14).toString("YYYY-MM-dd")+"&primary_release_date.lte="+DateTime.now().toString("YYYY-MM-dd") ));
-        types.add(new Type(2l,"Popular movies","&sort_by=popularity.desc"));
+        types.add(new Type(2l,"In theaters","&primary_release_date.gte="+DateTime.now().minusDays(14).toString("YYYY-MM-dd")+"&primary_release_date.lte="+DateTime.now().toString("YYYY-MM-dd") ));
+        types.add(new Type(1l,"Popular movies","&sort_by=popularity.desc"));
+
+
 
         return types;
     }

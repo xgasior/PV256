@@ -1,17 +1,29 @@
 package cz.muni.fi.pv256.movio2.a448273.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
+import android.widget.Switch;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import java.util.List;
 
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
+import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
+import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
 import cz.muni.fi.pv256.movio2.a448273.Fragments.DetailFragment;
+import cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.Loaders.SaveTypes;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.MovioManager;
 import cz.muni.fi.pv256.movio2.a448273.R;
 
+import static cz.muni.fi.pv256.movio2.a448273.Fragments.MainFragment.*;
 
 
 /**
@@ -20,8 +32,8 @@ import cz.muni.fi.pv256.movio2.a448273.R;
 
 public class MainActivity extends AppCompatActivity implements MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener  {
    // Button mThemeSwitch;
+    public static boolean sTypesInited;
     public static boolean mIsTwoPanes;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
     savedInstanceState = null;
@@ -36,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements MoviesRecyclerVie
                         .commit();
         } else {
             mIsTwoPanes = false;
-            getSupportActionBar().setElevation(0f);
         }
         initNav();
     }
@@ -66,4 +77,12 @@ public class MainActivity extends AppCompatActivity implements MoviesRecyclerVie
             listView.setAdapter(customAdapter);
         }
     }
+
+    public Switch getSwitch() {
+        return (Switch)findViewById(R.id.online_offline_switch);
+    }
+
+
+
+
 }

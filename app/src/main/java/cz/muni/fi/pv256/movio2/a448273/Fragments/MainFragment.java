@@ -6,23 +6,31 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.muni.fi.pv256.movio2.a448273.Activities.MainActivity;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.MoviesRecyclerViewAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Adapters.NavAdapter;
 import cz.muni.fi.pv256.movio2.a448273.Api.RestClient;
@@ -30,6 +38,10 @@ import cz.muni.fi.pv256.movio2.a448273.Constants.ConstantContainer;
 import cz.muni.fi.pv256.movio2.a448273.Containers.MovieContainer;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Movie;
 import cz.muni.fi.pv256.movio2.a448273.Entity.Type;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.Loaders.GetTypes;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.Loaders.SaveTypes;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.MovioContract;
+import cz.muni.fi.pv256.movio2.a448273.Peristance.MovioManager;
 import cz.muni.fi.pv256.movio2.a448273.R;
 import cz.muni.fi.pv256.movio2.a448273.Service.MovioService;
 
@@ -45,9 +57,38 @@ public class MainFragment  extends Fragment {
     private int mPosition = ListView.INVALID_POSITION;
     private MoviesRecyclerViewAdapter.ViewHolder.OnMovieSelectListener mListener;
     public static Context sContext;
+    public static boolean sTypesInited;
     private RecyclerView mRecyclerView;
-
+    private static boolean sIsOnline = true;
     public MainFragment() {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        init();
+        Log.d(TAG, "onStart: ");
+        MainActivity activity = (MainActivity)getActivity();
+        Switch onlineOfflineSwitch = activity.getSwitch();
+
+        if (onlineOfflineSwitch != null) {
+
+            onlineOfflineSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (!isChecked) {
+                        MovieContainer.sMovies.clear();
+                        sIsOnline = false;
+                        load();
+
+                    } else {
+                        MovieContainer.sMovies.clear();
+                        sIsOnline = true;
+                        download();
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -77,25 +118,26 @@ public class MainFragment  extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
 
-        final ConnectivityManager connMgr = (ConnectivityManager)sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if(sIsOnline) {
+            final ConnectivityManager connMgr = (ConnectivityManager) sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-        if( mobile == null) {
-            if( wifi != null && !wifi.isConnected()) {
+            if (mobile == null) {
+                if (wifi != null && !wifi.isConnected()) {
 
-                view = inflater.inflate(R.layout.empty_fragment, container, false);
-                TextView textView = (TextView)view.findViewById(R.id.empty_fragment_text);
-                textView.setText("No Internet");
-                return view;
-            }
-        }  else if( mobile!= null && !wifi.isConnected() && !mobile.isConnected()){
+                    view = inflater.inflate(R.layout.empty_fragment, container, false);
+                    TextView textView = (TextView) view.findViewById(R.id.empty_fragment_text);
+                    textView.setText("No Internet");
+                    return view;
+                }
+            } else if (mobile != null && !wifi.isConnected() && !mobile.isConnected()) {
 
                 view = inflater.inflate(R.layout.empty_fragment, container, false);
                 TextView textView = (TextView) view.findViewById(R.id.empty_fragment_text);
                 textView.setText("No Internet");
-            return view;
-        }
+                return view;
+            }
 
             view = inflater.inflate(R.layout.fragment_main, container, false);
             mRecyclerView = (RecyclerView) view.findViewById(R.id.movies_by_genres_rec_view);
@@ -113,19 +155,129 @@ public class MainFragment  extends Fragment {
             //RestClient.SetMainFragment(this);
             //MovieContainer.getInstance().initTypedMovies(this);
 
-            startListening();
-            for(Type t : MovieContainer.getTypes()) {
-                if(!MovieContainer.sMovies.contains(t)) {
-                    downloadMovies(t);
-                }
+           download();
+        }
+        else  {
+           load();
+            int count = 0;
+            for(Type t : MovieContainer.sMovies) {
+                count += t.getMovies().size();
+            }
+            if(count == 0) {
+
+            view = inflater.inflate(R.layout.empty_fragment, container, false);
+            TextView textView = (TextView) view.findViewById(R.id.empty_fragment_text);
+            textView.setText("No data");
+                return view;
+            } else {
+                view = inflater.inflate(R.layout.fragment_main, container, false);
+                mRecyclerView = (RecyclerView) view.findViewById(R.id.movies_by_genres_rec_view);
             }
 
+
+            if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+
+            if (mPosition != ListView.INVALID_POSITION) {
+                mRecyclerView.smoothScrollToPosition(mPosition);
+            }
+            }
+
+        }
         return view;
     }
 
-    private void fillRecycleView(RecyclerView view, List<Type> types) {
 
-        if (types != null) {
+    private void load() {
+        getLoaderManager().initLoader(0, null, new TypesCallback(getActivity().getApplicationContext())).forceLoad();
+    }
+
+    private class TypesCallback implements LoaderManager.LoaderCallbacks<List<Type>> {
+        Context mContext;
+
+        public TypesCallback(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public Loader<List<Type>> onCreateLoader(int id, Bundle args) {
+            return new GetTypes(mContext, new MovioManager(mContext));
+        }
+
+        @Override
+        public void onLoadFinished(Loader<List<Type>> loader, List<Type> data) {
+            MovieContainer.sMovies.addAll(data);
+            setAdapter(mRecyclerView, MovieContainer.sMovies);
+            setContent();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<Type>> loader) {
+
+        }
+    }
+
+    public class SaveTypesCallback implements LoaderManager.LoaderCallbacks<List<Type>> {
+        Context mContext;
+
+        public SaveTypesCallback(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public Loader<List<Type>> onCreateLoader(int id, Bundle args) {
+            return new SaveTypes(mContext, new MovioManager(mContext), MovieContainer.getTypes());
+        }
+
+
+
+
+        @Override
+        public void onLoadFinished(Loader<List<Type>> loader, List<Type> data) {
+            MovieContainer.sMovies.addAll(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<Type>> loader) {
+
+        }
+    }
+
+
+    public class GetTypesCallback implements LoaderManager.LoaderCallbacks<List<Type>> {
+        Context mContext;
+
+        public GetTypesCallback(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public Loader<List<Type>> onCreateLoader(int id, Bundle args) {
+            return new GetTypes(mContext, new MovioManager(mContext));
+        }
+
+        @Override
+        public void onLoadFinished(Loader<List<Type>> loader, List<Type> data) {
+            MovieContainer.sMovies.addAll(data);
+            sTypesInited = true;
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<Type>> loader) {
+
+        }
+    }
+    private void download() {
+        startListening();
+        for (Type t : MovieContainer.getTypes()) {
+            if (!MovieContainer.sMovies.contains(t)) {
+                downloadMovies(t);
+            }
+        }
+    }
+
+    private void fillRecycleView(RecyclerView view, List<Type> types) {
+        if (types != null && view != null) {
             view.setHasFixedSize(true);
 
             view.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -133,7 +285,6 @@ public class MainFragment  extends Fragment {
 
             setAdapter(view, types);
         }
-
     }
 
     @Override
@@ -163,28 +314,37 @@ public class MainFragment  extends Fragment {
     }
 
     private void setAdapter(RecyclerView recyclerView, final List<Type> types) {
-        MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, sContext, types);
+        if (recyclerView != null){
+            MoviesRecyclerViewAdapter adapter = new MoviesRecyclerViewAdapter(mListener, sContext, types);
         recyclerView.setAdapter(adapter);
     }
-
-    public interface OnMovieSelectListener {
-        void onMovieSelect(Movie movie);
     }
+
+
+
     public void setContent() {
-        ArrayList<Type> typeArrayList = new ArrayList<>();
-        ArrayList<String> checkboxesChecked = new ArrayList<>();
-        for(CheckBox c : NavAdapter.sCheckBoxes.keySet()) {
-            if(c.isChecked()) {
-                checkboxesChecked.add(NavAdapter.sCheckBoxes.get(c));
-            }
-        }
-        for(Type t : MovieContainer.sMovies)  {
-            if (checkboxesChecked.contains(t.getName())) {
-                if(!typeArrayList.contains(t)) {
-                    typeArrayList.add(t);
+            ArrayList<Type> typeArrayList = new ArrayList<>();
+            ArrayList<String> checkboxesChecked = new ArrayList<>();
+            for (CheckBox c : NavAdapter.sCheckBoxes.keySet()) {
+                if (c.isChecked()) {
+                    checkboxesChecked.add(NavAdapter.sCheckBoxes.get(c));
                 }
             }
-        }
-        fillRecycleView(mRecyclerView, typeArrayList);
+            for (Type t : MovieContainer.sMovies) {
+                if (checkboxesChecked.contains(t.getName())) {
+                    if (!typeArrayList.contains(t)) {
+                        typeArrayList.add(t);
+                    }
+                }
+            }
+            fillRecycleView(mRecyclerView, typeArrayList);
+
     }
+    public void init() {
+        getLoaderManager().initLoader(0, null, new GetTypesCallback(getActivity().getApplicationContext())).forceLoad();
+        if(!sTypesInited) {
+            sTypesInited = true;
+            getLoaderManager().initLoader(0, null, new SaveTypesCallback(getActivity().getApplicationContext())).forceLoad();
+
+    }}
 }

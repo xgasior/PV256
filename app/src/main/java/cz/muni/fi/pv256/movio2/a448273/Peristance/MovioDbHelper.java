@@ -15,7 +15,7 @@ import static cz.muni.fi.pv256.movio2.a448273.Peristance.MovioContract.*;
 public class MovioDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movio.db";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 12;
 
     public MovioDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,7 +30,7 @@ public class MovioDbHelper extends SQLiteOpenHelper {
                 " );";
 
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
-                MovieEntry.COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                MovieEntry.COLUMN_ID + " INT UNIQUE, " +
                 MovieEntry.COLUMN_BACK_DROP + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_COVER_PATH + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +

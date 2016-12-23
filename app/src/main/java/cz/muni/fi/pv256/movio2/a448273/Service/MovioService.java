@@ -122,6 +122,7 @@ public class MovioService extends IntentService {
             movie.setPopularity(Float.parseFloat(result.getPopularity().toString()));
             movie.setReleaseDate(DateTime.parse(result.getReleaseDate()).getMillis());
             movie.setTitle(result.getTitle());
+            movie.setTypeId(type.getId());
             try {
                 MovieContainer.sStringHastMap.put(movie.getCoverPath(), Glide.
                         with(MainFragment.sContext).
